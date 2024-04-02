@@ -15,29 +15,39 @@ const Summary = () => {
   const removeAll = useCart((state) => state.removeAll);
 
   useEffect(() => {
-    if (searchParams.get('success')) {
-      toast.success('Payment completed.');
-      removeAll();
-    }
+    const link = `https://app.sandbox.midtrans.com/snap/snap.js`;
+    const clientKey: string = process.env.NEXT_PUBLIC_CLIENT || '';
+    const script = document.createElement('script');
+    script.src = link;
+    script.setAttribute('data-client-key', clientKey);
+    script.async = true;
 
-    if (searchParams.get('canceled')) {
-      toast.error('Something went wrong.');
-    }
-  }, [searchParams, removeAll]);
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const totalPrice = items.reduce((total, item) => {
     return total + Number(item.price);
   }, 0);
 
   const onCheckout = async () => {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
-      {
-        productIds: items.map((item) => item.id),
-      },
-    );
+    if (items.length == 0) {
+      toast.error('Cart is Empty');
+    } else {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
+        {
+          productIds: items.map((item) => item.id),
+          total: totalPrice,
+        },
+      );
 
-    window.location = response.data.url;
+      //@ts-ignore
+      window.snap.pay(response.data.token);
+    }
   };
 
   return (

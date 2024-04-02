@@ -6,7 +6,14 @@ import Container from '@/components/ui/container';
 import useCart from '@/hooks/use-cart';
 
 import Summary from './components/summary';
+
+import toast from 'react-hot-toast';
+
+import axios from 'axios';
+
 import CartItem from './components/cart-item';
+
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 export const revalidate = 0;
 
@@ -14,8 +21,26 @@ const CartPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const cart = useCart();
 
+  const params = useSearchParams();
+  const router = useRouter();
+
+  const updatePayment = async () => {
+    if (params.get('transaction_status')) {
+      cart.removeAll();
+      router.replace('/cart', undefined);
+
+      toast.success('Payment Successful');
+    }
+  };
+
   useEffect(() => {
     setIsMounted(true);
+
+    const payment = async () => {
+      await updatePayment();
+    };
+
+    payment();
   }, []);
 
   if (!isMounted) {
