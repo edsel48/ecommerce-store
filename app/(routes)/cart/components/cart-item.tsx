@@ -5,7 +5,7 @@ import { X, Minus, Plus } from 'lucide-react';
 import IconButton from '@/components/ui/icon-button';
 import Currency from '@/components/ui/currency';
 import useCart from '@/hooks/use-cart';
-import { Product } from '@/types';
+import { Product, Size } from '@/types';
 
 interface CartItems {
   product: Product;
@@ -15,6 +15,24 @@ interface CartItems {
 interface CartItemProps {
   data: CartItems;
 }
+
+interface MultiplierItemProps {
+  data: Size;
+  quantity: number;
+}
+
+const Multiplier: React.FC<MultiplierItemProps> = ({ data, quantity }) => {
+  if (data.name === 'Piece') {
+    return <></>;
+  }
+
+  return (
+    <>
+      <div>*</div>
+      <div>{Number(data.value) * quantity} pcs </div>
+    </>
+  );
+};
 
 const CartItem: React.FC<CartItemProps> = ({ data }) => {
   const cart = useCart();
@@ -67,7 +85,15 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
               {data.product.size.name}
             </p>
           </div>
-          <Currency value={Number(data.product.price) * data.quantity} />
+          <div className="flex gap-3">
+            <Currency
+              value={
+                Number(data.product.price) *
+                (data.product.size.name == 'Piece' ? data.quantity : 1)
+              }
+            />
+            <Multiplier data={data.product.size} quantity={data.quantity} />
+          </div>
         </div>
       </div>
     </li>

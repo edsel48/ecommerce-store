@@ -30,7 +30,11 @@ const Summary = () => {
   }, []);
 
   const totalPrice = items.reduce((total, item) => {
-    return total + Number(item.product.price) * item.quantity;
+    return (
+      total +
+      Number(item.product.price) *
+        (item.quantity * Number(item.product.size.value))
+    );
   }, 0);
 
   const onCheckout = async () => {
