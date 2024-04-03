@@ -41,6 +41,7 @@ const Summary = () => {
         `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
         {
           productIds: items.map((item) => item.product.id),
+          carts: items,
           total: totalPrice,
         },
       );

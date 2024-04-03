@@ -25,8 +25,10 @@ const CartPage = () => {
   const router = useRouter();
 
   const updatePayment = async () => {
-    if (params.get('transaction_status')) {
-      toast.success('Payment Successful');
+    if (
+      params.get('transaction_status') &&
+      params.get('transaction_status') != 'pending'
+    ) {
       cart.removeAll();
       router.replace('/cart', undefined);
     }
