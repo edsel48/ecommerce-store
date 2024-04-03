@@ -26,10 +26,9 @@ const CartPage = () => {
 
   const updatePayment = async () => {
     if (params.get('transaction_status')) {
+      toast.success('Payment Successful');
       cart.removeAll();
       router.replace('/cart', undefined);
-
-      toast.success('Payment Successful');
     }
   };
 
@@ -59,7 +58,7 @@ const CartPage = () => {
               )}
               <ul>
                 {cart.items.map((item) => (
-                  <CartItem key={item.id} data={item} />
+                  <CartItem key={item.product.id} data={item} />
                 ))}
               </ul>
             </div>
