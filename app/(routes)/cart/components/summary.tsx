@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
+import { auth } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import Button from '@/components/ui/button';
 import Currency from '@/components/ui/currency';
 import useCart from '@/hooks/use-cart';
@@ -30,14 +32,11 @@ const Summary = () => {
   }, []);
 
   const totalPrice = items.reduce((total, item) => {
-    return (
-      total +
-      Number(item.product.price) *
-        (item.quantity * Number(item.product.size.value))
-    );
+    return total + Number(item.product.price) * (item.quantity * item.size);
   }, 0);
 
   const onCheckout = async () => {
+    console.log(auth());
     if (items.length == 0) {
       toast.error('Cart is Empty');
     } else {

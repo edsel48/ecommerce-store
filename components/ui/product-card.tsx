@@ -10,6 +10,9 @@ import IconButton from '@/components/ui/icon-button';
 import usePreviewModal from '@/hooks/use-preview-modal';
 import useCart from '@/hooks/use-cart';
 import { Product } from '@/types';
+import { AddMoreContext } from '../info';
+
+import { useSearchParams } from 'next/navigation';
 
 interface ProductCard {
   data: Product;
@@ -18,6 +21,8 @@ interface ProductCard {
 const ProductCard: React.FC<ProductCard> = ({ data }) => {
   const previewModal = usePreviewModal();
   const cart = useCart();
+  const params = useSearchParams();
+
   const router = useRouter();
 
   const handleClick = () => {
@@ -35,6 +40,18 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
 
     cart.addItem(data);
   };
+
+  let type = params.get('type');
+
+  let prices = {
+    normal: data.price,
+    silver: data.priceSilver,
+    gold: data.priceGold,
+    platinum: data.pricePlatinum,
+  };
+  let price = prices['normal'];
+
+  if (type != null) price = prices[type];
 
   return (
     <div
@@ -69,7 +86,10 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
       </div>
       {/* Price & Reiew */}
       <div className="flex items-center justify-between">
-        <Currency value={data?.price} />
+        <div className="flex gap-4">
+          <Currency value={price} />
+          <AddMoreContext data={data} type={type} />
+        </div>
       </div>
     </div>
   );

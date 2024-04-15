@@ -5,6 +5,7 @@ import Button from '@/components/ui/button';
 import { ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import useCart from '@/hooks/use-cart';
+import { UserButton } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
 const NavbarActions = () => {
@@ -32,6 +33,7 @@ const NavbarActions = () => {
           {cart.items.length}
         </span>
       </Button>
+      <UserButton afterSignOutUrl="/" />
     </div>
   );
 };

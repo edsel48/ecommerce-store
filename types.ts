@@ -15,14 +15,25 @@ export interface Product {
   category: Category;
   name: string;
   price: string;
+  priceSilver: string;
+  priceGold: string;
+  pricePlatinum: string;
   isFeatured: boolean;
-  size: Size;
+  sizes: SizeOnProduct[];
   images: Image[];
 }
 
 export interface Image {
   id: string;
   url: string;
+}
+
+export interface SizeOnProduct {
+  id: string;
+  productId: string;
+  sizeId: string;
+  size: Size;
+  product: Product;
 }
 
 export interface Size {

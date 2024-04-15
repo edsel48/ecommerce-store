@@ -7,6 +7,7 @@ import { AlertTriangle } from 'lucide-react';
 
 interface CartItem {
   product: Product;
+  size: number;
   quantity: number;
 }
 
@@ -16,6 +17,7 @@ interface CartStore {
   removeItem: (id: string) => void;
   addQuantity: (id: string) => void;
   removeQuantity: (id: string) => void;
+  changeSize: (id: string, value: number) => void;
   removeAll: () => void;
 }
 
@@ -39,15 +41,49 @@ const useCart = create(
                   quantity:
                     item.quantity +
                     (item.product.id === existingItem.product.id ? 1 : 0),
+                  size: item.size,
                 };
               }),
             ],
           });
         } else {
-          set({ items: [...get().items, { product: data, quantity: 1 }] });
+          set({
+            items: [...get().items, { product: data, quantity: 1, size: 1 }],
+          });
         }
 
         toast.success('Item added to cart.');
+      },
+      changeSize: (id: string, value: number) => {
+        const currentItems = get().items;
+
+        const existingItem = currentItems.find(
+          (item) => item.product.id === id,
+        );
+
+        if (!existingItem) {
+          return toast('Item not found');
+        }
+
+        set({
+          items: [
+            ...get().items.map((item) => {
+              if (item.product.id === existingItem.product.id) {
+                return {
+                  product: item.product,
+                  quantity: item.quantity,
+                  size: value,
+                };
+              } else {
+                return {
+                  product: item.product,
+                  quantity: item.quantity,
+                  size: item.size,
+                };
+              }
+            }),
+          ],
+        });
       },
       addQuantity: (id: string) => {
         const currentItems = get().items;
@@ -67,11 +103,13 @@ const useCart = create(
                 return {
                   product: item.product,
                   quantity: (item.quantity += 1),
+                  size: item.size,
                 };
               } else {
                 return {
                   product: item.product,
                   quantity: item.quantity,
+                  size: item.size,
                 };
               }
             }),
@@ -103,11 +141,13 @@ const useCart = create(
                 return {
                   product: item.product,
                   quantity: (item.quantity -= 1),
+                  size: item.size,
                 };
               } else {
                 return {
                   product: item.product,
                   quantity: item.quantity,
+                  size: item.size,
                 };
               }
             }),

@@ -5,11 +5,16 @@ import { X, Minus, Plus } from 'lucide-react';
 import IconButton from '@/components/ui/icon-button';
 import Currency from '@/components/ui/currency';
 import useCart from '@/hooks/use-cart';
+import Button from '@/components/ui/button';
+
+import { useState } from 'react';
+
 import { Product, Size } from '@/types';
 
 interface CartItems {
   product: Product;
   quantity: number;
+  size: number;
 }
 
 interface CartItemProps {
@@ -17,19 +22,21 @@ interface CartItemProps {
 }
 
 interface MultiplierItemProps {
-  data: Size;
+  data: number;
   quantity: number;
 }
 
 const Multiplier: React.FC<MultiplierItemProps> = ({ data, quantity }) => {
-  if (data.name === 'Piece') {
+  if (data === 1) {
     return <></>;
   }
 
   return (
     <>
       <div>*</div>
-      <div>{Number(data.value) * quantity} pcs </div>
+      <div>
+        {Number(data)} * {quantity} = {Number(data) * quantity} pcs
+      </div>
     </>
   );
 };
@@ -47,6 +54,10 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
 
   const increaseQuantity = () => {
     cart.addQuantity(data.product.id);
+  };
+
+  const onChangeButton = (value: number, productId: string) => {
+    cart.changeSize(data.product.id, value);
   };
 
   return (
@@ -81,18 +92,42 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
                 icon={<Plus size={15} />}
               />
             </div>
-            <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500">
-              {data.product.size.name}
-            </p>
+            <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500"></p>
           </div>
-          <div className="flex gap-3">
-            <Currency
-              value={
-                Number(data.product.price) *
-                (data.product.size.name == 'Piece' ? data.quantity : 1)
-              }
-            />
-            <Multiplier data={data.product.size} quantity={data.quantity} />
+          <div className="flex w-full flex-col gap-3">
+            <div>
+              <Currency
+                value={
+                  Number(data.product.price) * (data.size == 1 ? data.size : 1)
+                }
+              />{' '}
+              <Multiplier data={data.size} quantity={data.quantity} />
+            </div>
+            <div className="flex gap-3">
+              {data.product.sizes.map((s) =>
+                +data.size !== +s.size.value ? (
+                  <Button
+                    key={s.sizeId}
+                    className="mt-6 w-full border bg-white text-black"
+                    onClick={() => {
+                      onChangeButton(+s.size.value, data.product.id);
+                    }}
+                  >
+                    {s.size.name}
+                  </Button>
+                ) : (
+                  <Button
+                    key={s.sizeId}
+                    className="border-1 mt-6 w-full border border-black bg-white text-black"
+                    onClick={() => {
+                      onChangeButton(+s.size.value, data.product.id);
+                    }}
+                  >
+                    {s.size.name}
+                  </Button>
+                ),
+              )}
+            </div>
           </div>
         </div>
       </div>
