@@ -38,16 +38,16 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
   const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
 
-    cart.addItem(data);
+    cart.addItem(data, data.sizes[0]);
   };
 
   let type = params.get('type');
 
   let prices = {
-    normal: data.price,
-    silver: data.priceSilver,
-    gold: data.priceGold,
-    platinum: data.pricePlatinum,
+    normal: data.sizes[0].price,
+    silver: data.sizes[0].priceSilver,
+    gold: data.sizes[0].priceGold,
+    platinum: data.sizes[0].pricePlatinum,
   };
   let price = prices['normal'];
 
@@ -88,7 +88,7 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
       <div className="flex items-center justify-between">
         <div className="flex gap-4">
           <Currency value={price} />
-          <AddMoreContext data={data} type={type} />
+          <AddMoreContext data={data} type={type == null ? 'normal' : type} />
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ import Button from '@/components/ui/button';
 
 import { useState } from 'react';
 
-import { Product, Size } from '@/types';
+import { Product, Size, SizeOnProduct } from '@/types';
 
 interface CartItems {
   product: Product;
@@ -56,8 +56,8 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
     cart.addQuantity(data.product.id);
   };
 
-  const onChangeButton = (value: number, productId: string) => {
-    cart.changeSize(data.product.id, value);
+  const onChangeButton = (size: SizeOnProduct, productId: string) => {
+    cart.changeSize(data.product.id, size);
   };
 
   return (
@@ -98,7 +98,8 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
             <div>
               <Currency
                 value={
-                  Number(data.product.price) * (data.size == 1 ? data.size : 1)
+                  Number(data.product.sizes[0].price) *
+                  (data.size == 1 ? data.size : 1)
                 }
               />{' '}
               <Multiplier data={data.size} quantity={data.quantity} />
@@ -110,7 +111,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
                     key={s.sizeId}
                     className="mt-6 w-full border bg-white text-black"
                     onClick={() => {
-                      onChangeButton(+s.size.value, data.product.id);
+                      onChangeButton(s, data.product.id);
                     }}
                   >
                     {s.size.name}
@@ -120,7 +121,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
                     key={s.sizeId}
                     className="border-1 mt-6 w-full border border-black bg-white text-black"
                     onClick={() => {
-                      onChangeButton(+s.size.value, data.product.id);
+                      onChangeButton(s, data.product.id);
                     }}
                   >
                     {s.size.name}

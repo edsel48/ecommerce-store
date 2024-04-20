@@ -2,22 +2,23 @@ import { create } from 'zustand';
 import { toast } from 'react-hot-toast';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-import { Product } from '@/types';
+import { Product, SizeOnProduct } from '@/types';
 import { AlertTriangle } from 'lucide-react';
 
 interface CartItem {
   product: Product;
+  productSize: SizeOnProduct;
   size: number;
   quantity: number;
 }
 
 interface CartStore {
   items: CartItem[];
-  addItem: (data: Product) => void;
+  addItem: (data: Product, size: SizeOnProduct) => void;
   removeItem: (id: string) => void;
   addQuantity: (id: string) => void;
   removeQuantity: (id: string) => void;
-  changeSize: (id: string, value: number) => void;
+  changeSize: (id: string, size: SizeOnProduct) => void;
   removeAll: () => void;
 }
 
@@ -25,11 +26,12 @@ const useCart = create(
   persist<CartStore>(
     (set, get) => ({
       items: [],
-      addItem: (data: Product) => {
+      addItem: (data: Product, size: SizeOnProduct) => {
         const currentItems = get().items;
 
         const existingItem = currentItems.find(
-          (item) => item.product.id === data.id,
+          (item) =>
+            item.product.id === data.id && item.productSize.id === size.id,
         );
 
         if (existingItem) {
@@ -40,21 +42,33 @@ const useCart = create(
                   product: item.product,
                   quantity:
                     item.quantity +
-                    (item.product.id === existingItem.product.id ? 1 : 0),
-                  size: item.size,
+                    (item.product.id === existingItem.product.id &&
+                    item.productSize.id === size.id
+                      ? 1
+                      : 0),
+                  size: +size.size.value,
+                  productSize: size,
                 };
               }),
             ],
           });
         } else {
           set({
-            items: [...get().items, { product: data, quantity: 1, size: 1 }],
+            items: [
+              ...get().items,
+              {
+                product: data,
+                quantity: 1,
+                size: +size.size.value,
+                productSize: size,
+              },
+            ],
           });
         }
 
         toast.success('Item added to cart.');
       },
-      changeSize: (id: string, value: number) => {
+      changeSize: (id: string, size: SizeOnProduct) => {
         const currentItems = get().items;
 
         const existingItem = currentItems.find(
@@ -72,13 +86,15 @@ const useCart = create(
                 return {
                   product: item.product,
                   quantity: item.quantity,
-                  size: value,
+                  size: +size.size.value,
+                  productSize: size,
                 };
               } else {
                 return {
                   product: item.product,
                   quantity: item.quantity,
                   size: item.size,
+                  productSize: item.productSize,
                 };
               }
             }),
@@ -104,12 +120,14 @@ const useCart = create(
                   product: item.product,
                   quantity: (item.quantity += 1),
                   size: item.size,
+                  productSize: item.productSize,
                 };
               } else {
                 return {
                   product: item.product,
                   quantity: item.quantity,
                   size: item.size,
+                  productSize: item.productSize,
                 };
               }
             }),
@@ -142,12 +160,14 @@ const useCart = create(
                   product: item.product,
                   quantity: (item.quantity -= 1),
                   size: item.size,
+                  productSize: item.productSize,
                 };
               } else {
                 return {
                   product: item.product,
                   quantity: item.quantity,
                   size: item.size,
+                  productSize: item.productSize,
                 };
               }
             }),

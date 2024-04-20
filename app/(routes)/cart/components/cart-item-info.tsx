@@ -42,7 +42,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
               {data.sizes.map((e) => e.id)}
             </p>
           </div>
-          <Currency value={data.price} />
+          <Currency value={data.sizes[0].price} />
         </div>
       </div>
     </li>

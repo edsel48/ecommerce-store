@@ -36,7 +36,6 @@ const Summary = () => {
   }, 0);
 
   const onCheckout = async () => {
-    console.log(auth());
     if (items.length == 0) {
       toast.error('Cart is Empty');
     } else {

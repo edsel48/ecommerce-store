@@ -14,13 +14,16 @@ export interface Product {
   id: string;
   category: Category;
   name: string;
-  price: string;
-  priceSilver: string;
-  priceGold: string;
-  pricePlatinum: string;
   isFeatured: boolean;
   sizes: SizeOnProduct[];
   images: Image[];
+  promo?: Promo;
+}
+
+export interface Promo {
+  id: string;
+  name: string;
+  discount: number;
 }
 
 export interface Image {
@@ -34,6 +37,10 @@ export interface SizeOnProduct {
   sizeId: string;
   size: Size;
   product: Product;
+  price: number;
+  priceSilver: number;
+  priceGold: number;
+  pricePlatinum: number;
 }
 
 export interface Size {
