@@ -56,7 +56,7 @@ export const AddMoreContext: React.FC<InfoProps> = ({ data, type }) => {
 
 const Info: React.FC<InfoProps> = ({ data, type }) => {
   const [size, setSize] = useState<SizeOnProduct | null>(null);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const cart = useCart();
 
   const addToCart = () => {
@@ -67,7 +67,7 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
   };
 
   const decreaseQuantity = () => {
-    setQuantity(quantity - 1 < 0 ? quantity : quantity - 1);
+    setQuantity(quantity - 1 < 1 ? quantity : quantity - 1);
   };
 
   const increaseQuantity = () => {
