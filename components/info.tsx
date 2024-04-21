@@ -1,8 +1,16 @@
-import { Product } from '@/types';
+'use client';
+
+import { Product, SizeOnProduct } from '@/types';
 import Currency from '@/components/ui/currency';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, X, Minus, Plus } from 'lucide-react';
 import Button from './ui/button';
 import Badge from './ui/badge';
+import { sortPrices } from '@/lib/utils';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import useCart from '@/hooks/use-cart';
+
+import IconButton from '@/components/ui/icon-button';
 
 interface InfoProps {
   data: Product;
@@ -14,11 +22,13 @@ export interface Prices {
 }
 
 const getPrice = (data: Product, type: string) => {
+  const maxPrice = sortPrices(data.sizes);
+
   let prices: Prices = {
-    normal: data.sizes[0].price,
-    silver: data.sizes[0].priceSilver,
-    gold: data.sizes[0].priceGold,
-    platinum: data.sizes[0].pricePlatinum,
+    normal: maxPrice[0].price,
+    silver: maxPrice[0].priceSilver,
+    gold: maxPrice[0].priceGold,
+    platinum: maxPrice[0].pricePlatinum,
   };
   let price = prices['normal'];
 
@@ -29,18 +39,14 @@ const getPrice = (data: Product, type: string) => {
 
 export const AddMoreContext: React.FC<InfoProps> = ({ data, type }) => {
   const maxValueOnSizes = Math.max(...data?.sizes?.map((d) => +d.size.value));
+  const maxPrice = sortPrices(data.sizes);
 
-  console.log({
-    data,
-    type,
-    sizes: data.sizes.map((size) => size),
-    price: getPrice(data, type),
-  });
+  if (maxPrice.length > 1) {
+    let price = Number(maxPrice[maxPrice.length - 1].price);
 
-  if (data?.sizes?.length > 1) {
     return (
       <>
-        ~ <Currency value={Number(getPrice(data, type)) * maxValueOnSizes} />
+        ~ <Currency value={price} />
       </>
     );
   }
@@ -49,6 +55,25 @@ export const AddMoreContext: React.FC<InfoProps> = ({ data, type }) => {
 };
 
 const Info: React.FC<InfoProps> = ({ data, type }) => {
+  const [size, setSize] = useState<SizeOnProduct | null>(null);
+  const [quantity, setQuantity] = useState(0);
+  const cart = useCart();
+
+  const addToCart = () => {
+    if (size == null) return toast.error('Please pick a size!');
+    if (quantity == 0) return toast.error('Please set the quantity!');
+
+    cart.addItem(data, size, quantity);
+  };
+
+  const decreaseQuantity = () => {
+    setQuantity(quantity - 1 < 0 ? quantity : quantity - 1);
+  };
+
+  const increaseQuantity = () => {
+    setQuantity(quantity + 1);
+  };
+
   return (
     <div>
       <div className="flex gap-3">
@@ -63,18 +88,46 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
       </div>
       <div className="mt-3 flex items-end justify-between">
         <p className="flex gap-3 text-2xl text-gray-900">
-          <Currency value={getPrice(data, type)} />{' '}
-          <AddMoreContext data={data} type={type} />
+          {size == null ? (
+            <>
+              <Currency value={getPrice(data, type)} />
+              <AddMoreContext data={data} type={type} />
+            </>
+          ) : (
+            <Currency value={size.price * quantity} />
+          )}
         </p>
       </div>
       <hr className="my-4" />
+      <div className="flex gap-3 ">
+        <h3 className="font-semibold text-black">Quantity </h3>
+        <IconButton onClick={decreaseQuantity} icon={<Minus size={15} />} />
+        <div className="qty">{quantity}</div>
+        <IconButton onClick={increaseQuantity} icon={<Plus size={15} />} />
+      </div>
       <div className="flex items-center gap-x-4">
         <h3 className="font-semibold text-black">Size: </h3>
-        <div>{data?.sizes?.map((d) => d.size.name).join(', ')}</div>
+        <div className="flex gap-x-4">
+          {data?.sizes?.map((d) => (
+            <Button
+              key={d.sizeId}
+              className={
+                size != null && size.id == d.id
+                  ? 'mt-6 w-full border-solid border-white bg-black text-white'
+                  : 'mt-6 w-full border-solid border-black bg-white text-black'
+              }
+              onClick={() => {
+                setSize(d);
+              }}
+            >
+              {d.size.name}
+            </Button>
+          ))}
+        </div>
       </div>
       <div className="mt-10 flex items-center gap-x-3">
-        <Button className="flex items-center gap-x-2">
-          Add To Card
+        <Button className="flex items-center gap-x-2" onClick={addToCart}>
+          Add To Cart
           <ShoppingCart />
         </Button>
       </div>

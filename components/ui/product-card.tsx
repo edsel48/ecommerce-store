@@ -13,6 +13,7 @@ import { Product } from '@/types';
 import { AddMoreContext } from '../info';
 
 import { useSearchParams } from 'next/navigation';
+import { sortPrices } from '@/lib/utils';
 
 interface ProductCard {
   data: Product;
@@ -35,19 +36,14 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
     previewModal.onOpen(data);
   };
 
-  const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
-    event.stopPropagation();
-
-    cart.addItem(data, data.sizes[0]);
-  };
-
-  let type = params.get('type');
+  let type: string | null = params.get('type');
+  const maxPrice = sortPrices(data.sizes);
 
   let prices = {
-    normal: data.sizes[0].price,
-    silver: data.sizes[0].priceSilver,
-    gold: data.sizes[0].priceGold,
-    platinum: data.sizes[0].pricePlatinum,
+    normal: maxPrice[0].price,
+    silver: maxPrice[0].priceSilver,
+    gold: maxPrice[0].priceGold,
+    platinum: maxPrice[0].pricePlatinum,
   };
   let price = prices['normal'];
 
@@ -71,10 +67,6 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
             <IconButton
               onClick={onPreview}
               icon={<Expand size={20} className="text-gray-600" />}
-            />
-            <IconButton
-              onClick={onAddToCart}
-              icon={<ShoppingCart size={20} className="text-gray-600" />}
             />
           </div>
         </div>

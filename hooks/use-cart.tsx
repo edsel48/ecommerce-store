@@ -14,11 +14,10 @@ interface CartItem {
 
 interface CartStore {
   items: CartItem[];
-  addItem: (data: Product, size: SizeOnProduct) => void;
-  removeItem: (id: string) => void;
-  addQuantity: (id: string) => void;
-  removeQuantity: (id: string) => void;
-  changeSize: (id: string, size: SizeOnProduct) => void;
+  addItem: (data: Product, size: SizeOnProduct, quantity?: number) => void;
+  removeItem: (id: string, size: SizeOnProduct) => void;
+  addQuantity: (id: string, size: SizeOnProduct) => void;
+  removeQuantity: (id: string, size: SizeOnProduct) => void;
   removeAll: () => void;
 }
 
@@ -26,7 +25,7 @@ const useCart = create(
   persist<CartStore>(
     (set, get) => ({
       items: [],
-      addItem: (data: Product, size: SizeOnProduct) => {
+      addItem: (data: Product, size: SizeOnProduct, quantity?: number) => {
         const currentItems = get().items;
 
         const existingItem = currentItems.find(
@@ -43,11 +42,11 @@ const useCart = create(
                   quantity:
                     item.quantity +
                     (item.product.id === existingItem.product.id &&
-                    item.productSize.id === size.id
+                    existingItem.productSize.id === size.id
                       ? 1
                       : 0),
                   size: +size.size.value,
-                  productSize: size,
+                  productSize: item.productSize,
                 };
               }),
             ],
@@ -58,7 +57,7 @@ const useCart = create(
               ...get().items,
               {
                 product: data,
-                quantity: 1,
+                quantity: quantity != null ? quantity : 1,
                 size: +size.size.value,
                 productSize: size,
               },
@@ -68,11 +67,11 @@ const useCart = create(
 
         toast.success('Item added to cart.');
       },
-      changeSize: (id: string, size: SizeOnProduct) => {
+      addQuantity: (id: string, size: SizeOnProduct) => {
         const currentItems = get().items;
 
         const existingItem = currentItems.find(
-          (item) => item.product.id === id,
+          (item) => item.product.id === id && item.productSize.id === size.id,
         );
 
         if (!existingItem) {
@@ -82,40 +81,10 @@ const useCart = create(
         set({
           items: [
             ...get().items.map((item) => {
-              if (item.product.id === existingItem.product.id) {
-                return {
-                  product: item.product,
-                  quantity: item.quantity,
-                  size: +size.size.value,
-                  productSize: size,
-                };
-              } else {
-                return {
-                  product: item.product,
-                  quantity: item.quantity,
-                  size: item.size,
-                  productSize: item.productSize,
-                };
-              }
-            }),
-          ],
-        });
-      },
-      addQuantity: (id: string) => {
-        const currentItems = get().items;
-
-        const existingItem = currentItems.find(
-          (item) => item.product.id === id,
-        );
-
-        if (!existingItem) {
-          return toast('Item not found');
-        }
-
-        set({
-          items: [
-            ...get().items.map((item) => {
-              if (item.product.id === existingItem.product.id) {
+              if (
+                item.product.id === existingItem.product.id &&
+                item.productSize.id === size.id
+              ) {
                 return {
                   product: item.product,
                   quantity: (item.quantity += 1),
@@ -134,11 +103,11 @@ const useCart = create(
           ],
         });
       },
-      removeQuantity: (id: string) => {
+      removeQuantity: (id: string, size: SizeOnProduct) => {
         const currentItems = get().items;
 
         const existingItem = currentItems.find(
-          (item) => item.product.id === id,
+          (item) => item.product.id === id && item.productSize.id === size.id,
         );
 
         if (!existingItem) {
@@ -146,8 +115,14 @@ const useCart = create(
         }
 
         if (existingItem.quantity == 1) {
+          let filteredItems: CartItem[] = [];
+          get().items.forEach((e) => {
+            if (!(e.product.id == id && e.productSize.id == size.id)) {
+              filteredItems.push(e);
+            }
+          });
           set({
-            items: [...get().items.filter((item) => item.product.id !== id)],
+            items: filteredItems,
           });
           toast.success('Item removed from cart.');
         }
@@ -155,7 +130,10 @@ const useCart = create(
         set({
           items: [
             ...get().items.map((item) => {
-              if (item.product.id === existingItem.product.id) {
+              if (
+                item.product.id === existingItem.product.id &&
+                item.productSize.id === size.id
+              ) {
                 return {
                   product: item.product,
                   quantity: (item.quantity -= 1),
@@ -174,9 +152,15 @@ const useCart = create(
           ],
         });
       },
-      removeItem: (id: string) => {
+      removeItem: (id: string, size: SizeOnProduct) => {
+        let filteredItems: CartItem[] = [];
+        get().items.forEach((e) => {
+          if (!(e.product.id == id && e.productSize.id == size.id)) {
+            filteredItems.push(e);
+          }
+        });
         set({
-          items: [...get().items.filter((item) => item.product.id !== id)],
+          items: filteredItems,
         });
         toast.success('Item removed from cart.');
       },

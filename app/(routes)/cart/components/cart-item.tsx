@@ -13,8 +13,9 @@ import { Product, Size, SizeOnProduct } from '@/types';
 
 interface CartItems {
   product: Product;
-  quantity: number;
+  productSize: SizeOnProduct;
   size: number;
+  quantity: number;
 }
 
 interface CartItemProps {
@@ -45,19 +46,15 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
   const cart = useCart();
 
   const onRemove = () => {
-    cart.removeItem(data.product.id);
+    cart.removeItem(data.product.id, data.productSize);
   };
 
   const decreaseQuantity = () => {
-    cart.removeQuantity(data.product.id);
+    cart.removeQuantity(data.product.id, data.productSize);
   };
 
   const increaseQuantity = () => {
-    cart.addQuantity(data.product.id);
-  };
-
-  const onChangeButton = (size: SizeOnProduct, productId: string) => {
-    cart.changeSize(data.product.id, size);
+    cart.addQuantity(data.product.id, data.productSize);
   };
 
   return (
@@ -95,40 +92,16 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
             <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500"></p>
           </div>
           <div className="flex w-full flex-col gap-3">
+            <div className="flex gap-3">
+              <Currency value={Number(data.productSize.price)} />
+              {data.quantity != 1 && <div>{`* ${data.quantity}`}</div>}
+            </div>
             <div>
               <Currency
-                value={
-                  Number(data.product.sizes[0].price) *
-                  (data.size == 1 ? data.size : 1)
-                }
-              />{' '}
-              <Multiplier data={data.size} quantity={data.quantity} />
+                value={Number(data.productSize.price * data.quantity)}
+              />
             </div>
-            <div className="flex gap-3">
-              {data.product.sizes.map((s) =>
-                +data.size !== +s.size.value ? (
-                  <Button
-                    key={s.sizeId}
-                    className="mt-6 w-full border bg-white text-black"
-                    onClick={() => {
-                      onChangeButton(s, data.product.id);
-                    }}
-                  >
-                    {s.size.name}
-                  </Button>
-                ) : (
-                  <Button
-                    key={s.sizeId}
-                    className="border-1 mt-6 w-full border border-black bg-white text-black"
-                    onClick={() => {
-                      onChangeButton(s, data.product.id);
-                    }}
-                  >
-                    {s.size.name}
-                  </Button>
-                ),
-              )}
-            </div>
+            <div>{data.productSize.size.name}</div>
           </div>
         </div>
       </div>
