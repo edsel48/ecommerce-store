@@ -21,6 +21,9 @@ const CartPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const cart = useCart();
 
+  const { items, addItem, removeItem, addQuantity, removeQuantity, removeAll } =
+    cart;
+
   const params = useSearchParams();
   const router = useRouter();
 
@@ -55,11 +58,11 @@ const CartPage = () => {
           <h1 className="text-3xl font-bold text-black">Shopping Cart</h1>
           <div className="mt-12 gap-x-12 lg:grid lg:grid-cols-12 lg:items-start">
             <div className="lg:col-span-7">
-              {cart.items.length === 0 && (
+              {items.length === 0 && (
                 <p className="text-neutral-500">No items added to cart.</p>
               )}
               <ul>
-                {cart.items.map((item) => (
+                {items.map((item) => (
                   <CartItem key={item.product.id} data={item} />
                 ))}
               </ul>

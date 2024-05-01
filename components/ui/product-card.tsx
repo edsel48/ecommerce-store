@@ -47,6 +47,7 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
   };
   let price = prices['normal'];
 
+  // @ts-ignore
   if (type != null) price = prices[type];
 
   return (
