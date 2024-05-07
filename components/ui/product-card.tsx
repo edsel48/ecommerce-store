@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import Currency from '@/components/ui/currency';
 import IconButton from '@/components/ui/icon-button';
 import usePreviewModal from '@/hooks/use-preview-modal';
+import Badge from './badge';
 import useCart from '@/hooks/use-cart';
 import { Product } from '@/types';
 import { AddMoreContext } from '../info';
@@ -80,8 +81,43 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
       {/* Price & Reiew */}
       <div className="flex items-center justify-between">
         <div className="flex gap-4">
-          <Currency value={price} />
-          <AddMoreContext data={data} type={type == null ? 'normal' : type} />
+          {data.promo == null ? (
+            <>
+              <Currency value={price} />
+              <AddMoreContext
+                data={data}
+                type={type == null ? 'normal' : type}
+              />
+            </>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2">
+                <div className="flex gap-2 line-through">
+                  <Currency value={price} />
+                  <AddMoreContext
+                    data={data}
+                    type={type == null ? 'normal' : type}
+                  />
+                </div>
+                <Badge
+                  data={{
+                    label: `${data.promo.discount}%`,
+                  }}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <div className="flex">
+                  <Currency value={price * (1 - data.promo.discount * 0.01)} />
+                </div>
+                <AddMoreContext
+                  data={data}
+                  type={type == null ? 'normal' : type}
+                  isPromo={true}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ import IconButton from '@/components/ui/icon-button';
 interface InfoProps {
   data: Product;
   type: string;
+  isPromo?: boolean;
 }
 
 export interface Prices {
@@ -37,12 +38,25 @@ const getPrice = (data: Product, type: string) => {
   return price;
 };
 
-export const AddMoreContext: React.FC<InfoProps> = ({ data, type }) => {
+export const AddMoreContext: React.FC<InfoProps> = ({
+  data,
+  type,
+  isPromo = false,
+}) => {
   const maxValueOnSizes = Math.max(...data?.sizes?.map((d) => +d.size.value));
   const maxPrice = sortPrices(data.sizes);
 
   if (maxPrice.length > 1) {
     let price = Number(maxPrice[maxPrice.length - 1].price);
+
+    if (isPromo) {
+      return (
+        <>
+          ~{' '}
+          <Currency value={price * (1 - (data.promo?.discount || 0) * 0.01)} />
+        </>
+      );
+    }
 
     return (
       <>
@@ -89,10 +103,14 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
       <div className="mt-3 flex items-end justify-between">
         <p className="flex gap-3 text-2xl text-gray-900">
           {size == null ? (
-            <>
-              <Currency value={getPrice(data, type)} />
-              <AddMoreContext data={data} type={type} />
-            </>
+            data.promo == null ? (
+              <>
+                <Currency value={getPrice(data, type)} />
+                <AddMoreContext data={data} type={type} />
+              </>
+            ) : (
+              <div className="flex gap-2">PROMO</div>
+            )
           ) : (
             <Currency value={size.price * quantity} />
           )}
