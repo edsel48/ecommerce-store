@@ -1,14 +1,27 @@
+'use client';
+
 import Link from 'next/link';
 import Container from '@/components/ui/container';
 import MainNav from '@/components/main-nav';
 import getCategories from '@/actions/get-categories';
 import NavbarActions from './navbar-actions';
 
+import { useEffect, useState } from 'react';
+
 export const revalidate = 0;
 
 const Navbar = async () => {
-  const categories = await getCategories();
+  // const [categories, setCategories] = useState([]);
+  // useEffect(() => {
+  //   const get = async () => {
+  //     let cat = await getCategories();
+  //     setCategories(cat);
+  //   };
 
+  //   get();
+  // }, []);
+
+  let categories = await getCategories();
   return (
     <div className="border-b">
       <Container>

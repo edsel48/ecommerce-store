@@ -6,8 +6,7 @@ import Billboard from '@/components/ui/billboard';
 import ProductList from '@/components/product-list';
 import Container from '@/components/ui/container';
 
-export const revalidate = 0;
-
+// eslint-disable-next-line @next/next/no-async-client-component
 const HomePage = async () => {
   const billboards = await getBillboard(`bd13d0d2-7072-410c-9557-bd48fe300dc3`);
   const products = await getProducts({ isFeatured: true });
