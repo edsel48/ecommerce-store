@@ -92,14 +92,41 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
             <p className="ml-4 border-l border-gray-200 pl-4 text-gray-500"></p>
           </div>
           <div className="flex w-full flex-col gap-3">
-            <div className="flex gap-3">
-              <Currency value={Number(data.productSize.price)} />
-              {data.quantity != 1 && <div>{`* ${data.quantity}`}</div>}
-            </div>
+            {data.product.promo == null ? (
+              <div className="flex gap-3">
+                <Currency value={Number(data.productSize.price)} />
+                {data.quantity != 1 && <div>{`* ${data.quantity}`}</div>}
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <Currency
+                  value={Number(
+                    data.productSize.price *
+                      (1 - data.product.promo.discount * 0.01),
+                  )}
+                />
+                {data.quantity != 1 && <div>{`* ${data.quantity}`}</div>}
+              </div>
+            )}
+
             <div>
-              <Currency
-                value={Number(data.productSize.price * data.quantity)}
-              />
+              {data.product.promo == null ? (
+                <>
+                  <Currency
+                    value={Number(data.productSize.price * data.quantity)}
+                  />
+                </>
+              ) : (
+                <>
+                  <Currency
+                    value={Number(
+                      data.productSize.price *
+                        (1 - data.product.promo.discount * 0.01) *
+                        data.quantity,
+                    )}
+                  />
+                </>
+              )}
             </div>
             <div>{data.productSize.size.name}</div>
           </div>
