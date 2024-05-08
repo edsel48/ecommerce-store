@@ -109,10 +109,33 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
                 <AddMoreContext data={data} type={type} />
               </>
             ) : (
-              <div className="flex gap-2">PROMO</div>
+              <>
+                <div className="flex">
+                  <Currency
+                    value={
+                      getPrice(data, type) * (1 - data.promo.discount * 0.01)
+                    }
+                  />
+
+                  <AddMoreContext
+                    data={data}
+                    type={type == null ? 'normal' : type}
+                    isPromo={true}
+                  />
+                </div>
+              </>
             )
-          ) : (
+          ) : data.promo == null ? (
             <Currency value={size.price * quantity} />
+          ) : (
+            <div className="flex flex-col">
+              <div className="line-through">
+                <Currency value={size.price * quantity} />
+              </div>
+              <Currency
+                value={size.price * (1 - data.promo.discount * 0.01) * quantity}
+              />
+            </div>
           )}
         </p>
       </div>

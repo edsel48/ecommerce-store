@@ -34,20 +34,40 @@ const useCart = create(
         );
 
         if (existingItem) {
+          console.info('EXISTING ITEMS');
+          console.log(existingItem.productSize);
+
+          console.info('SIZE PICKED');
+          console.log(size);
+          console.log();
           set({
             items: [
               ...get().items.map((item) => {
-                return {
-                  product: item.product,
-                  quantity:
-                    item.quantity +
-                    (item.product.id === existingItem.product.id &&
-                    existingItem.productSize.id === size.id
-                      ? 1
-                      : 0),
-                  size: +size.size.value,
-                  productSize: item.productSize,
-                };
+                if (
+                  item.product.id == existingItem.product.id &&
+                  item.productSize.id == size.id
+                ) {
+                  console.info('ITEM NOW');
+                  console.log(item.productSize);
+                  console.log(item.product.id == existingItem.product.id);
+                  console.log(existingItem.productSize.sizeId);
+                  console.log(size.sizeId);
+                  console.log(existingItem.productSize.sizeId == size.sizeId);
+
+                  return {
+                    product: item.product,
+                    quantity: item.quantity + 1,
+                    size: +size.size.value,
+                    productSize: item.productSize,
+                  };
+                } else {
+                  return {
+                    product: item.product,
+                    quantity: item.quantity,
+                    size: +size.size.value,
+                    productSize: item.productSize,
+                  };
+                }
               }),
             ],
           });
