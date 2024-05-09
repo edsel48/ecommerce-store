@@ -148,7 +148,7 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
       </div>
       <div>
         <h3 className="font-semibold text-black">Description </h3>
-        <textarea readOnly className="w-full resize-none">
+        <textarea readOnly className="w-full resize-none" rows={7}>
           {data.description}
         </textarea>
       </div>
