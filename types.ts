@@ -15,6 +15,7 @@ export interface Product {
   category: Category;
   name: string;
   isFeatured: boolean;
+  description: string;
   sizes: SizeOnProduct[];
   images: Image[];
   promo?: Promo;

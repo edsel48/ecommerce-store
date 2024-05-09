@@ -140,11 +140,17 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
         </p>
       </div>
       <hr className="my-4" />
-      <div className="flex gap-3 ">
+      <div className="flex items-center gap-3">
         <h3 className="font-semibold text-black">Quantity </h3>
         <IconButton onClick={decreaseQuantity} icon={<Minus size={15} />} />
         <div className="qty">{quantity}</div>
         <IconButton onClick={increaseQuantity} icon={<Plus size={15} />} />
+      </div>
+      <div>
+        <h3 className="font-semibold text-black">Description </h3>
+        <textarea readOnly className="w-full resize-none">
+          {data.description}
+        </textarea>
       </div>
       <div className="flex items-center gap-x-4">
         <h3 className="font-semibold text-black">Size: </h3>
