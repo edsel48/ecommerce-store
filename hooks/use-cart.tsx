@@ -34,12 +34,6 @@ const useCart = create(
         );
 
         if (existingItem) {
-          console.info('EXISTING ITEMS');
-          console.log(existingItem.productSize);
-
-          console.info('SIZE PICKED');
-          console.log(size);
-          console.log();
           set({
             items: [
               ...get().items.map((item) => {
@@ -47,13 +41,6 @@ const useCart = create(
                   item.product.id == existingItem.product.id &&
                   item.productSize.id == size.id
                 ) {
-                  console.info('ITEM NOW');
-                  console.log(item.productSize);
-                  console.log(item.product.id == existingItem.product.id);
-                  console.log(existingItem.productSize.sizeId);
-                  console.log(size.sizeId);
-                  console.log(existingItem.productSize.sizeId == size.sizeId);
-
                   return {
                     product: item.product,
                     quantity: item.quantity + 1,
