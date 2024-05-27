@@ -20,6 +20,10 @@ const Summary = () => {
 
   const [ongkir, setOngkir] = useState(null);
 
+  const [user, setUser] = useState({});
+
+  const [total, setTotal] = useState(0);
+
   const [cityData, setCityData] = useState([]);
 
   useEffect(() => {
@@ -50,6 +54,11 @@ const Summary = () => {
           });
         });
 
+        let response = await axios.get('/api/user');
+        let user = response.data;
+
+        setUser(user);
+
         // @ts-ignore
         setCityData(cityFormatted);
       } catch (e) {
@@ -61,14 +70,26 @@ const Summary = () => {
     fetch();
   }, []);
 
-  const totalPrice = items.reduce((total, item) => {
-    let price = Number(item.productSize.price);
-    if (item.product.promo != null)
-      price = Number(
-        item.productSize.price * (1 - item.product.promo.discount * 0.01),
-      );
-    return total + price * item.quantity;
-  }, 0);
+  const getTotal = (): number => {
+    if (user == null) return 0;
+
+    let total = items.reduce((total, item) => {
+      let tier = {
+        SILVER: item.productSize.priceSilver,
+        GOLD: item.productSize.priceGold,
+        PLATINUM: item.productSize.pricePlatinum,
+      };
+
+      // @ts-ignore
+      let price = Number(tier[user.tier]);
+
+      if (item.product.promo != null)
+        price = Number(price * (1 - item.product.promo.discount * 0.01));
+      return total + price * item.quantity;
+    }, 0);
+
+    return total;
+  };
 
   const onCheckout = async () => {
     if (items.length == 0) {
@@ -79,7 +100,9 @@ const Summary = () => {
         {
           productIds: items.map((item) => item.product.id),
           carts: items,
-          total: totalPrice + ongkirPrice,
+          total: getTotal() + ongkirPrice,
+          // @ts-ignore
+          memberId: user.id,
         },
       );
 
@@ -175,7 +198,7 @@ const Summary = () => {
       <div className="mt-6 space-y-4">
         <div className="flex items-center justify-between border-t border-gray-200 pt-4">
           <div className="text-base font-medium text-gray-900">Order total</div>
-          <Currency value={totalPrice} />
+          <Currency value={getTotal()} />
         </div>
         <div className="flex items-center justify-between ">
           <div className="text-base font-medium text-gray-900">
@@ -185,7 +208,7 @@ const Summary = () => {
         </div>
         <div className="flex items-center justify-between ">
           <div className="text-base font-medium text-gray-900">Grand Total</div>
-          <Currency value={ongkirPrice + totalPrice} />
+          <Currency value={ongkirPrice + getTotal()} />
         </div>
       </div>
       <Button

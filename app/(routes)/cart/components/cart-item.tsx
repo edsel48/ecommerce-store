@@ -7,7 +7,9 @@ import Currency from '@/components/ui/currency';
 import useCart from '@/hooks/use-cart';
 import Button from '@/components/ui/button';
 
-import { useState } from 'react';
+import axios from 'axios';
+
+import { useEffect, useState } from 'react';
 
 import { Product, Size, SizeOnProduct } from '@/types';
 
@@ -44,6 +46,29 @@ const Multiplier: React.FC<MultiplierItemProps> = ({ data, quantity }) => {
 
 const CartItem: React.FC<CartItemProps> = ({ data }) => {
   const cart = useCart();
+
+  let [user, setUser] = useState();
+  let [price, setPrice] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      let response = await axios.get('/api/user');
+
+      let user = response.data;
+
+      let tier = {
+        SILVER: data.productSize.priceSilver,
+        GOLD: data.productSize.priceGold,
+        PLATINUM: data.productSize.pricePlatinum,
+      };
+
+      // @ts-ignore
+      setPrice(tier[user.tier]);
+      setUser(response.data);
+    };
+
+    fetchUser();
+  }, []);
 
   const onRemove = () => {
     cart.removeItem(data.product.id, data.productSize);
@@ -94,15 +119,14 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
           <div className="flex w-full flex-col gap-3">
             {data.product.promo == null ? (
               <div className="flex gap-3">
-                <Currency value={Number(data.productSize.price)} />
+                <Currency value={Number(price)} />
                 {data.quantity != 1 && <div>{`* ${data.quantity}`}</div>}
               </div>
             ) : (
               <div className="flex gap-3">
                 <Currency
                   value={Number(
-                    data.productSize.price *
-                      (1 - data.product.promo.discount * 0.01),
+                    price * (1 - data.product.promo.discount * 0.01),
                   )}
                 />
                 {data.quantity != 1 && <div>{`* ${data.quantity}`}</div>}
@@ -112,15 +136,13 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
             <div>
               {data.product.promo == null ? (
                 <>
-                  <Currency
-                    value={Number(data.productSize.price * data.quantity)}
-                  />
+                  <Currency value={Number(price * data.quantity)} />
                 </>
               ) : (
                 <>
                   <Currency
                     value={Number(
-                      data.productSize.price *
+                      price *
                         (1 - data.product.promo.discount * 0.01) *
                         data.quantity,
                     )}

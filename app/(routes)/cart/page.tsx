@@ -19,6 +19,8 @@ export const revalidate = 0;
 
 const CartPage = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const [user, setUser] = useState({});
+
   const cart = useCart();
 
   const { items, addItem, removeItem, addQuantity, removeQuantity, removeAll } =
@@ -44,6 +46,16 @@ const CartPage = () => {
       await updatePayment();
     };
 
+    const fetchUser = async () => {
+      let response = await axios.get('/api/user');
+
+      let user = response.data;
+
+      setUser(user);
+    };
+
+    fetchUser();
+
     payment();
   }, []);
 
@@ -56,6 +68,8 @@ const CartPage = () => {
       <Container>
         <div className="px-4 py-16 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-black">Shopping Cart</h1>
+          {/* @ts-ignore */}
+          <div>{user.tier} MEMBER</div>
           <div className="mt-12 gap-x-12 lg:grid lg:grid-cols-12 lg:items-start">
             <div className="lg:col-span-7">
               {items.length === 0 && (
