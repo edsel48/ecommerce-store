@@ -54,6 +54,18 @@ const CartPage = () => {
       setUser(user);
     };
 
+    const addTraffic = async () => {
+      try {
+        let response = await axios.get('/api/traffic');
+
+        let traffic = response.data;
+      } catch (e) {
+        toast.error('SOMETHING WENT WRONG');
+      }
+    };
+
+    addTraffic();
+
     fetchUser();
 
     payment();
