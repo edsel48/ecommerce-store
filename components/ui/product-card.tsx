@@ -15,6 +15,7 @@ import { AddMoreContext } from '../info';
 
 import { useSearchParams } from 'next/navigation';
 import { sortPrices } from '@/lib/utils';
+import { isWithinInterval } from 'date-fns';
 
 interface ProductCard {
   data: Product;
@@ -81,15 +82,12 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
       {/* Price & Reiew */}
       <div className="flex items-center justify-between">
         <div className="flex gap-4">
-          {data.promo == null ? (
-            <>
-              <Currency value={price} />
-              <AddMoreContext
-                data={data}
-                type={type == null ? 'normal' : type}
-              />
-            </>
-          ) : (
+          {data.promo != null &&
+          !data.promo.isArchived &&
+          isWithinInterval(new Date(), {
+            start: data.promo.startDate,
+            end: data.promo.endDate,
+          }) ? (
             <div className="flex flex-col gap-3">
               <div className="flex gap-2">
                 <div className="flex gap-2 line-through">
@@ -117,6 +115,14 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
                 />
               </div>
             </div>
+          ) : (
+            <>
+              <Currency value={price} />
+              <AddMoreContext
+                data={data}
+                type={type == null ? 'normal' : type}
+              />
+            </>
           )}
         </div>
       </div>

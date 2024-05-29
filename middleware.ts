@@ -11,7 +11,6 @@ export default authMiddleware({
     '/',
     '/api/traffic',
   ],
-  debug: true,
 });
 
 export const config = {

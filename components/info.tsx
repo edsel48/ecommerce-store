@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import useCart from '@/hooks/use-cart';
 
 import IconButton from '@/components/ui/icon-button';
+import { isWithinInterval } from 'date-fns';
 
 interface InfoProps {
   data: Product;
@@ -92,23 +93,28 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
     <div>
       <div className="flex gap-3">
         <h1 className="text-3xl font-bold text-gray-900"> {data.name} </h1>
-        {data.promo != null && (
-          <Badge
-            data={{
-              label: 'PROMO',
-            }}
-          />
-        )}
+        {data.promo != null &&
+          !data.promo.isArchived &&
+          isWithinInterval(new Date(), {
+            start: data.promo.startDate,
+            end: data.promo.endDate,
+          }) && (
+            <Badge
+              data={{
+                label: 'PROMO',
+              }}
+            />
+          )}
       </div>
       <div className="mt-3 flex items-end justify-between">
         <p className="flex gap-3 text-2xl text-gray-900">
           {size == null ? (
-            data.promo == null ? (
-              <>
-                <Currency value={getPrice(data, type)} />
-                <AddMoreContext data={data} type={type} />
-              </>
-            ) : (
+            data.promo != null &&
+            !data.promo.isArchived &&
+            isWithinInterval(new Date(), {
+              start: data.promo.startDate,
+              end: data.promo.endDate,
+            }) ? (
               <>
                 <div className="flex">
                   <Currency
@@ -124,10 +130,18 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
                   />
                 </div>
               </>
+            ) : (
+              <>
+                <Currency value={getPrice(data, type)} />
+                <AddMoreContext data={data} type={type} />
+              </>
             )
-          ) : data.promo == null ? (
-            <Currency value={size.price * quantity} />
-          ) : (
+          ) : data.promo != null &&
+            !data.promo.isArchived &&
+            isWithinInterval(new Date(), {
+              start: data.promo.startDate,
+              end: data.promo.endDate,
+            }) ? (
             <div className="flex flex-col">
               <div className="line-through">
                 <Currency value={size.price * quantity} />
@@ -136,10 +150,22 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
                 value={size.price * (1 - data.promo.discount * 0.01) * quantity}
               />
             </div>
+          ) : (
+            <Currency value={size.price * quantity} />
           )}
         </p>
       </div>
       <hr className="my-4" />
+      <div>
+        {/* @ts-ignore */}
+        {data.sizes.map((e) => {
+          return (
+            <div>
+              {e.size.name} : {`${e.stock}`}{' '}
+            </div>
+          );
+        })}
+      </div>
       <div className="flex items-center gap-3">
         <h3 className="font-semibold text-black">Quantity </h3>
         <IconButton onClick={decreaseQuantity} icon={<Minus size={15} />} />

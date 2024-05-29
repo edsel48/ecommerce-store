@@ -26,6 +26,8 @@ const Summary = () => {
 
   const [cityData, setCityData] = useState([]);
 
+  const [address, setAddress] = useState('');
+
   useEffect(() => {
     const link = `https://app.sandbox.midtrans.com/snap/snap.js`;
     const clientKey: string = process.env.NEXT_PUBLIC_CLIENT || '';
@@ -92,6 +94,8 @@ const Summary = () => {
   };
 
   const onCheckout = async () => {
+    // @ts-ignore
+
     if (items.length == 0) {
       toast.error('Cart is Empty');
     } else {
@@ -103,6 +107,7 @@ const Summary = () => {
           total: getTotal() + ongkirPrice,
           // @ts-ignore
           memberId: user.id,
+          address,
         },
       );
 
@@ -161,7 +166,14 @@ const Summary = () => {
               <Dropdown data={cityData} setSelected={setCity} selected={city} />
               <div className="mt-3">
                 <div className="mb-3 font-bold">Address</div>
-                <input type="text" className="w-full px-5 py-3" />
+                <input
+                  type="text"
+                  className="w-full px-5 py-3"
+                  onBlur={(e) => {
+                    // @ts-ignore
+                    setAddress(`${e.currentTarget.value}, ${city.name}`);
+                  }}
+                />
               </div>
             </div>
             <div className="mb-3">

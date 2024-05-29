@@ -5,7 +5,7 @@ import getProducts from '@/actions/get-products';
 import Billboard from '@/components/ui/billboard';
 import ProductList from '@/components/product-list';
 import Container from '@/components/ui/container';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 

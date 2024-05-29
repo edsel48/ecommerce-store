@@ -25,6 +25,9 @@ export interface Promo {
   id: string;
   name: string;
   discount: number;
+  isArchived: boolean;
+  startDate: Date;
+  endDate: Date;
 }
 
 export interface Image {
