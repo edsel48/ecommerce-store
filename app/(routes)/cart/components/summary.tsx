@@ -123,10 +123,17 @@ const Summary = () => {
   const [unformattedOngkir, setUnformattedOngkir] = useState([]);
 
   const fetchOngkir = async () => {
+    let total = 0;
+
+    items.forEach((e) => {
+      total += e.productSize.weight;
+    });
+
     if (city != null) {
       let response = await axios.post('/api/ongkir', {
         // @ts-ignore
         destination: city.id,
+        weight: total,
       });
 
       let responseData = response.data.rajaongkir.results[0].costs;

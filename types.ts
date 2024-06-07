@@ -46,6 +46,7 @@ export interface SizeOnProduct {
   priceGold: number;
   pricePlatinum: number;
   stock: number;
+  weight: number;
 }
 
 export interface Size {
