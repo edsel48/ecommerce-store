@@ -79,6 +79,9 @@ const Summary = () => {
     if (user == null) return { total: 0, discount: 0 };
     let discount = 0;
 
+    // @ts-ignore
+    console.log(user.tier);
+
     let total = items.reduce((total, item) => {
       let tier = {
         SILVER: item.productSize.priceSilver,
@@ -105,6 +108,10 @@ const Summary = () => {
               : discount;
         }
       }
+
+      console.log(tier);
+      console.log(price);
+
       return total + price * item.quantity;
     }, 0);
 

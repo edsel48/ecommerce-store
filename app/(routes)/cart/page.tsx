@@ -15,8 +15,6 @@ import CartItem from './components/cart-item';
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-export const revalidate = 0;
-
 const CartPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [user, setUser] = useState({});

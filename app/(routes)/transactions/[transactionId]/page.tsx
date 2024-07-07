@@ -124,21 +124,23 @@ const TransactionDetailPage = ({
             </h1>
             <div className="w-full flex-col gap-3">
               {/* @ts-ignore */}
-              {transaction.logs.map((log) => {
-                return (
-                  <a
-                    href="#"
-                    className="mt-3 block w-full rounded-lg border border-gray-200 bg-white p-6 shadow hover:bg-gray-100"
-                  >
-                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
-                      {log.log}
-                    </h5>
-                    <p className="font-normal text-gray-700 ">
-                      Updated At : {format(log.createdAt, 'dd-MM-yyyy HH:mm')}
-                    </p>
-                  </a>
-                );
-              })}
+              {transaction.logs
+                //   @ts-ignore
+                .map((log) => {
+                  return (
+                    <a
+                      href="#"
+                      className="mt-3 block w-full rounded-lg border border-gray-200 bg-white p-6 shadow hover:bg-gray-100"
+                    >
+                      <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
+                        {log.log}
+                      </h5>
+                      <p className="font-normal text-gray-700 ">
+                        Updated At : {format(log.createdAt, 'dd-MM-yyyy HH:mm')}
+                      </p>
+                    </a>
+                  );
+                })}
             </div>
           </div>
         </div>
