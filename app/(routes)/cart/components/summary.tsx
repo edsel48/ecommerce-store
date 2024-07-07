@@ -72,8 +72,12 @@ const Summary = () => {
     fetch();
   }, []);
 
-  const getTotal = (): number => {
-    if (user == null) return 0;
+  const getTotal = (): {
+    total: number;
+    discount: number;
+  } => {
+    if (user == null) return { total: 0, discount: 0 };
+    let discount = 0;
 
     let total = items.reduce((total, item) => {
       let tier = {
@@ -85,12 +89,29 @@ const Summary = () => {
       // @ts-ignore
       let price = Number(tier[user.tier]);
 
-      if (item.product.promo != null)
-        price = Number(price * (1 - item.product.promo.discount * 0.01));
+      if (item.product.promo != null) {
+        if (item.quantity > item.product.promo.minimumBought) {
+          let discount = price * (item.product.promo.discount * 0.01);
+
+          price =
+            price -
+            (discount > item.product.promo.maximumDiscount
+              ? item.product.promo.maximumDiscount
+              : discount);
+
+          discount +=
+            discount > item.product.promo.maximumDiscount
+              ? item.product.promo.maximumDiscount
+              : discount;
+        }
+      }
       return total + price * item.quantity;
     }, 0);
 
-    return total;
+    return {
+      total,
+      discount,
+    };
   };
 
   const onCheckout = async () => {
@@ -99,12 +120,16 @@ const Summary = () => {
     if (items.length == 0) {
       toast.error('Cart is Empty');
     } else {
+      let { total, discount } = getTotal();
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
         {
           productIds: items.map((item) => item.product.id),
           carts: items,
-          total: getTotal() + ongkirPrice,
+          total: total + ongkirPrice,
+          ongkir: ongkirPrice,
+          totalDiscount: discount,
           // @ts-ignore
           memberId: user.id,
           address,
@@ -217,7 +242,7 @@ const Summary = () => {
       <div className="mt-6 space-y-4">
         <div className="flex items-center justify-between border-t border-gray-200 pt-4">
           <div className="text-base font-medium text-gray-900">Order total</div>
-          <Currency value={getTotal()} />
+          <Currency value={getTotal().total} />
         </div>
         <div className="flex items-center justify-between ">
           <div className="text-base font-medium text-gray-900">
@@ -227,7 +252,7 @@ const Summary = () => {
         </div>
         <div className="flex items-center justify-between ">
           <div className="text-base font-medium text-gray-900">Grand Total</div>
-          <Currency value={ongkirPrice + getTotal()} />
+          <Currency value={ongkirPrice + getTotal().total} />
         </div>
       </div>
       <Button

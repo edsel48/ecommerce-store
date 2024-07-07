@@ -28,6 +28,8 @@ export interface Promo {
   isArchived: boolean;
   startDate: Date;
   endDate: Date;
+  minimumBought: number;
+  maximumDiscount: number;
 }
 
 export interface Image {
