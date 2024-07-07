@@ -3,7 +3,7 @@
 import axios from 'axios';
 import Container from '@/components/ui/container';
 import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
+import { addDays, format, parse } from 'date-fns';
 
 const TransactionDetailPage = ({
   params,
@@ -53,6 +53,22 @@ const TransactionDetailPage = ({
           </h1>
           {/* @ts-ignore */}
           <h2 className="mb-3 font-bold">Status : {transaction.status}</h2>
+          <h2 className="mb-3 font-bold">
+            {/* @ts-ignore */}
+            Order Date : {transaction.createdAt}
+          </h2>
+          {/* @ts-ignore */}
+          <h2 className="mb-3 font-bold">
+            Arrival Estimation :{' '}
+            {format(
+              addDays(
+                // @ts-ignore
+                parse(transaction.createdAt, 'dd-MM-yyyy', new Date()),
+                7,
+              ),
+              'dd-MM-yyyy',
+            )}
+          </h2>
 
           <table className="text-surface w-full min-w-full table-auto rounded-md border border-black text-center text-sm">
             <thead className="border-b border-neutral-200 font-medium ">
