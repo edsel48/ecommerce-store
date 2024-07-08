@@ -5,6 +5,7 @@ import Container from '@/components/ui/container';
 import { useEffect, useState } from 'react';
 import { addDays, format, parse } from 'date-fns';
 import Button from '@/components/ui/button';
+import toast from 'react-hot-toast';
 
 const TransactionDetailPage = ({
   params,
@@ -82,6 +83,10 @@ const TransactionDetailPage = ({
                       await axios.post('/api/paid', {
                         transactionId: params.transactionId,
                       });
+
+                      toast.success('Transaction Finished');
+
+                      window.location.reload();
                     }}
                   >
                     Finish Order
