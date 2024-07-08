@@ -33,6 +33,8 @@ const CartPage = () => {
       params.get('transaction_status') != 'pending'
     ) {
       // update payment here to paid
+      await axios.patch('/api/pay');
+
       cart.removeAll();
       router.replace('/cart', undefined);
     }
