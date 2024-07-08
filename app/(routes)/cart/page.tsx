@@ -32,6 +32,7 @@ const CartPage = () => {
       params.get('transaction_status') &&
       params.get('transaction_status') != 'pending'
     ) {
+      // update payment here to paid
       cart.removeAll();
       router.replace('/cart', undefined);
     }

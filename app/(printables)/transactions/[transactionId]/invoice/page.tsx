@@ -49,11 +49,12 @@ const TransactionDetailPage = ({
     <div className="bg-white">
       <Container>
         <div className="px-4 py-10 sm:px-6 lg:px-8">
-          <h1 className="mb-3 flex gap-2 text-lg font-semibold">
+          <h1 className="text-3xl font-bold">Invoice</h1>
+          <h1 className="mb-3 mt-5 flex gap-2 text-lg font-semibold">
             Order <p className="font-bold">[{params.transactionId}]</p>
           </h1>
-          <div className="flex justify-between">
-            <div>
+          <div className="flex items-center justify-between">
+            <>
               {/* @ts-ignore */}
               <h2 className="mb-3 font-bold">Status : {transaction.status}</h2>
               <h2 className="mb-3 font-bold">
@@ -72,36 +73,23 @@ const TransactionDetailPage = ({
                   'dd-MM-yyyy',
                 )}
               </h2>
-            </div>
-            <div className="flex-col gap-5">
-              <div>
-                {/* @ts-ignore */}
-                {transaction.status == 'SHIPPING' ? (
-                  <Button
-                    onClick={async () => {
-                      await axios.post('/api/paid', {
-                        transactionId: params.transactionId,
-                      });
-                    }}
-                  >
-                    Finish Order
-                  </Button>
-                ) : (
-                  <></>
-                )}
-              </div>
-              <div className="mt-3">
+            </>
+            <>
+              {/* @ts-ignore
+              {transaction.status == 'SHIPPING' ? (
                 <Button
-                  onClick={() => {
-                    window.open(
-                      `https://store.mitra-solusi.shop/transactions/${params.transactionId}/invoice`,
-                    );
+                  onClick={async () => {
+                    await axios.post('/api/finish');
+
+                    window.location.reload();
                   }}
                 >
-                  Get Invoice
+                  Finish Order
                 </Button>
-              </div>
-            </div>
+              ) : (
+                <></>
+              )} */}
+            </>
           </div>
 
           <table className="text-surface mt-5 w-full min-w-full table-auto rounded-md border border-black text-center text-sm">
@@ -170,11 +158,11 @@ const TransactionDetailPage = ({
           <div className="mt-3">
             <h1 className="mb-3 text-lg font-bold">
               {/* @ts-ignore */}
-              Order Logs [{transaction.logs.length}]
+              {/* Order Logs [{transaction.logs.length}] */}
             </h1>
             <div className="w-full flex-col gap-3">
               {/* @ts-ignore */}
-              {transaction.logs
+              {/* {transaction.logs
                 //   @ts-ignore
                 .map((log) => {
                   return (
@@ -190,7 +178,7 @@ const TransactionDetailPage = ({
                       </p>
                     </a>
                   );
-                })}
+                })} */}
             </div>
           </div>
         </div>

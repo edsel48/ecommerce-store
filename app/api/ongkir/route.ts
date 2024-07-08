@@ -17,13 +17,9 @@ export async function POST(req: Request) {
   let body = await req.json();
   let { destination, weight } = body;
 
-  if (weight == 0) {
-    weight = 100;
-  }
-
   let response = await axios.post(
     'https://api.rajaongkir.com/starter/cost',
-    `origin=114&destination=${destination}&weight=${weight}&courier=jne`,
+    `origin=114&destination=${destination}&weight=100&courier=jne`,
     {
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
