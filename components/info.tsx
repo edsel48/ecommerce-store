@@ -6,12 +6,13 @@ import { ShoppingCart, X, Minus, Plus } from 'lucide-react';
 import Button from './ui/button';
 import Badge from './ui/badge';
 import { formatter, sortPrices } from '@/lib/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import useCart from '@/hooks/use-cart';
 
 import IconButton from '@/components/ui/icon-button';
 import { isWithinInterval } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 interface InfoProps {
   data: Product;
@@ -70,6 +71,12 @@ export const AddMoreContext: React.FC<InfoProps> = ({
 };
 
 const Info: React.FC<InfoProps> = ({ data, type }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.refresh();
+  }, []);
+
   const [size, setSize] = useState<SizeOnProduct | null>(null);
   const [quantity, setQuantity] = useState(1);
   const cart = useCart();
