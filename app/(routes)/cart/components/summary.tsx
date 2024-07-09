@@ -98,20 +98,22 @@ const Summary = () => {
       console.log({
         promo: item.product.promo,
         // @ts-ignore
-        discountNow: price * ((item.product.promo.discount || 0) * 0.01),
+        discountNow: price * (Number(item.product.promo.discount) * 0.01),
         price:
           price -
+          (discountNow >
           // @ts-ignore
-          (discountNow > (item.product.promo.maximumDiscount || 0)
+          (Number(item.product.promo.maximumDiscount) || 9999999999)
             ? // @ts-ignore
-              item.product.promo.maximumDiscount || 0
+              Number(item.product.promo.maximumDiscount)
             : discountNow),
         // @ts-ignore
         discount:
+          discountNow >
           // @ts-ignore
-          discountNow > (item.product.promo.maximumDiscount || 0)
+          (Number(item.product.promo.maximumDiscount) || 9999999999)
             ? // @ts-ignore
-              item.product.promo.maximumDiscount || 0
+              Number(item.product.promo.maximumDiscount)
             : discountNow,
       });
 
@@ -121,13 +123,19 @@ const Summary = () => {
 
           price =
             price -
-            (discountNow > item.product.promo.maximumDiscount
-              ? item.product.promo.maximumDiscount
+            (discountNow >
+            // @ts-ignore
+            (Number(item.product.promo.maximumDiscount) || 9999999999)
+              ? // @ts-ignore
+                Number(item.product.promo.maximumDiscount)
               : discountNow);
 
           discount +=
-            discountNow > item.product.promo.maximumDiscount
-              ? item.product.promo.maximumDiscount
+            discountNow >
+            // @ts-ignore
+            (Number(item.product.promo.maximumDiscount) || 9999999999)
+              ? // @ts-ignore
+                Number(item.product.promo.maximumDiscount)
               : discountNow;
 
           console.log({
