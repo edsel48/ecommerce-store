@@ -79,6 +79,10 @@ const Summary = () => {
     if (user == null) return { total: 0, discount: 0 };
     let discount = 0;
 
+    // @ts-ignore
+    let promos = [];
+    let promoDict = {};
+
     console.log({
       // @ts-ignore
       tier: user.tier,
@@ -95,65 +99,102 @@ const Summary = () => {
       let price = Number(tier[user.tier]);
       let discountNow = 0;
 
-      console.log({
+      let data = {
         promo: item.product.promo,
         // @ts-ignore
         discountNow: price * (Number(item.product.promo.discount) * 0.01),
+        // @ts-ignore
+        promoMax: Number(item.product.promo.maximumDiscountAmount),
+        excedeMaxPromo:
+          // @ts-ignore
+          price * (Number(item.product.promo.discount) * 0.01) >
+          // @ts-ignore
+          Number(item.product.promo.maximumDiscountAmount),
+        logicIfExcede:
+          // @ts-ignore
+          price * (Number(item.product.promo.discount) * 0.01) <=
+          // @ts-ignore
+          Number(item.product.promo.maximumDiscountAmount)
+            ? // @ts-ignore
+              price * (Number(item.product.promo.discount) * 0.01)
+            : // @ts-ignore
+              Number(item.product.promo.maximumDiscountAmount),
         price:
           price -
           (discountNow >
           // @ts-ignore
-          (Number(item.product.promo.maximumDiscount) || 9999999999)
+          (Number(item.product.promo.maximumDiscountAmount) || 9999999999)
             ? // @ts-ignore
-              Number(item.product.promo.maximumDiscount)
+              Number(item.product.promo.maximumDiscountAmount)
             : discountNow),
+        product: item.product,
+        size: item.productSize,
+        trueCount: Number(item.productSize.size.value) * Number(item.quantity),
         // @ts-ignore
         discount:
           discountNow >
           // @ts-ignore
-          (Number(item.product.promo.maximumDiscount) || 9999999999)
+          (Number(item.product.promo.maximumDiscountAmount) || 9999999999)
             ? // @ts-ignore
-              Number(item.product.promo.maximumDiscount)
+              Number(item.product.promo.maximumDiscountAmount)
             : discountNow,
-      });
+        priceAfterDiscount:
+          price - // @ts-ignore
+          (price * (Number(item.product.promo.discount) * 0.01) <=
+          // @ts-ignore
+          Number(item.product.promo.maximumDiscountAmount)
+            ? // @ts-ignore
+              price * (Number(item.product.promo.discount) * 0.01)
+            : // @ts-ignore
+              Number(item.product.promo.maximumDiscountAmount)),
+      };
+
+      console.log(data);
 
       if (item.product.promo != null) {
-        if (item.quantity > item.product.promo.minimumBought) {
-          discountNow = price * (item.product.promo.discount * 0.01);
-
-          price =
-            price -
-            (discountNow >
+        if (
+          // @ts-ignore
+          Number(item.product.promo.maximalUseCount) >
+          // @ts-ignore
+          Number(item.product.promo.useCount)
+        ) {
+          // @ts-ignore
+          if (data.trueCount >= item.product.promo.minimumAmountBought) {
             // @ts-ignore
-            (Number(item.product.promo.maximumDiscount) || 9999999999)
-              ? // @ts-ignore
-                Number(item.product.promo.maximumDiscount)
-              : discountNow);
+            promos.push({
+              promo: item.product.promo,
+              discount: data.logicIfExcede,
+              id: item.product.id,
+            });
 
-          discount +=
-            discountNow >
             // @ts-ignore
-            (Number(item.product.promo.maximumDiscount) || 9999999999)
-              ? // @ts-ignore
-                Number(item.product.promo.maximumDiscount)
-              : discountNow;
+            promoDict[item.product.id + item.productSize.id] =
+              data.logicIfExcede;
 
-          console.log({
-            discountNow,
-          });
+            discountNow = data.discountNow;
+
+            price = data.price;
+
+            discount += data.logicIfExcede;
+          }
         }
       }
 
-      console.log({ tier });
-      console.log({ price });
-      console.log({ discountNow });
-
-      return total + price * item.quantity - discountNow;
+      return total + price * item.quantity;
     }, 0);
+
+    // @ts-ignore
+    let totalDiscount = promos.reduce((total, b) => total + b.discount, 0);
 
     return {
       total,
       discount,
+      // @ts-ignore
+      grandTotal: total - totalDiscount,
+      totalDiscount,
+      // @ts-ignore
+      promos,
+      promoDict,
     };
   };
 
@@ -163,23 +204,22 @@ const Summary = () => {
     if (items.length == 0) {
       toast.error('Cart is Empty');
     } else {
-      let { total, discount } = getTotal();
-
-      toast.success(
-        JSON.stringify({
-          total,
-          discount,
-        }),
-      );
+      // @ts-ignore
+      let { total, discount, totalDiscount, promos, promoDict } = getTotal();
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
         {
           productIds: items.map((item) => item.product.id),
-          carts: items,
-          total: total + ongkirPrice,
+          carts: items.map((e) => {
+            return {
+              ...e,
+              discount: promoDict[e.product.id + e.productSize.id],
+            };
+          }),
+          total: total + ongkirPrice - totalDiscount,
           ongkir: ongkirPrice,
-          totalDiscount: discount,
+          totalDiscount,
           // @ts-ignore
           memberId: user.id,
           address,
@@ -300,9 +340,26 @@ const Summary = () => {
           </div>
           <Currency value={ongkirPrice} />
         </div>
+        {/* @ts-ignore */}
+        {getTotal().promos.map((e) => {
+          return (
+            <div className="flex items-center justify-between ">
+              <div className="text-base font-medium text-gray-900">
+                {/* @ts-ignore */}
+                Promo [{e.promo.name}]
+              </div>
+              <div className="flex">
+                <div> - </div>
+                {/* @ts-ignore */}
+                <Currency value={e.discount} />
+              </div>
+            </div>
+          );
+        })}
         <div className="flex items-center justify-between ">
           <div className="text-base font-medium text-gray-900">Grand Total</div>
-          <Currency value={ongkirPrice + getTotal().total} />
+          {/* @ts-ignore */}
+          <Currency value={ongkirPrice + getTotal().grandTotal} />
         </div>
       </div>
       <Button
