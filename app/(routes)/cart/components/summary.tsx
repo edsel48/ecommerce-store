@@ -215,7 +215,8 @@ const Summary = () => {
       toast.error('Cart is Empty');
     } else {
       // @ts-ignore
-      let { total, discount, totalDiscount, promos, promoDict } = getTotal();
+      let { total, discount, totalDiscount, promos, promoDict, grandTotal } =
+        getTotal();
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
@@ -227,7 +228,7 @@ const Summary = () => {
               discount: promoDict[e.product.id + e.productSize.id],
             };
           }),
-          total: total + ongkirPrice - totalDiscount,
+          total: grandTotal + ongkirPrice,
           ongkir: ongkirPrice,
           totalDiscount,
           // @ts-ignore
