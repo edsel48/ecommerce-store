@@ -5,7 +5,7 @@ import Currency from '@/components/ui/currency';
 import { ShoppingCart, X, Minus, Plus } from 'lucide-react';
 import Button from './ui/button';
 import Badge from './ui/badge';
-import { sortPrices } from '@/lib/utils';
+import { formatter, sortPrices } from '@/lib/utils';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import useCart from '@/hooks/use-cart';
@@ -156,7 +156,7 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
         </p>
       </div>
       <hr className="my-4" />
-      <div>
+      <div className="font-bold">
         {/* @ts-ignore */}
         {data.sizes.map((e) => {
           return (
@@ -165,6 +165,29 @@ const Info: React.FC<InfoProps> = ({ data, type }) => {
             </div>
           );
         })}
+      </div>
+      <div className="my-3 flex-col gap-3 text-lg font-bold">
+        {data.promo != null &&
+        !data.promo.isArchived &&
+        isWithinInterval(new Date(), {
+          start: data.promo.startDate,
+          end: data.promo.endDate,
+        }) ? (
+          <>
+            <div>Promo Active</div>
+            <div>
+              {/* @ts-ignore */}
+              Discount {data.promo.discount}% up to {/* @ts-ignore */}
+              {formatter.format(Number(data.promo.maximumDiscountAmount))}
+            </div>
+            <div>
+              {/* @ts-ignore */}
+              with Minimum Quantity Bought {data.promo.minimumAmountBought} pcs
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="flex items-center gap-3">
         <h3 className="font-semibold text-black">Quantity </h3>
