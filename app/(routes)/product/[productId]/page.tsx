@@ -1,9 +1,11 @@
 import getProduct from '@/actions/get-product';
 import getProducts from '@/actions/get-products';
 import Gallery from '@/components/gallery';
-import Info from '@/components/info';
+// import Info from '@/components/info';
 import ProductList from '@/components/product-list';
 import Container from '@/components/ui/container';
+
+import dynamic from 'next/dynamic';
 
 interface ProductPageProps {
   params: {
@@ -14,9 +16,17 @@ interface ProductPageProps {
 const ProductPage: React.FC<ProductPageProps> = async ({ params }) => {
   const product = await getProduct(params.productId);
 
+  const Info = dynamic(
+    () => import('@/components/info').then((res) => res.default),
+    {
+      ssr: false,
+    },
+  );
+
   const suggestedProducts = await getProducts({
     categoryId: product?.category?.id,
   });
+
   return (
     <div className="bg-white">
       <Container>
