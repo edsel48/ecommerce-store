@@ -190,7 +190,7 @@ const Summary = () => {
         }
       }
 
-      return total + price * item.quantity;
+      return total + price;
     }, 0);
 
     // @ts-ignore
@@ -228,7 +228,7 @@ const Summary = () => {
               discount: promoDict[e.product.id + e.productSize.id],
             };
           }),
-          total: grandTotal + ongkirPrice,
+          total: total + ongkirPrice,
           ongkir: ongkirPrice,
           totalDiscount,
           // @ts-ignore
