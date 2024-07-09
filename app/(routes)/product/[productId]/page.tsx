@@ -6,6 +6,8 @@ import ProductList from '@/components/product-list';
 import Container from '@/components/ui/container';
 
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface ProductPageProps {
   params: {
@@ -14,6 +16,12 @@ interface ProductPageProps {
 }
 
 const ProductPage: React.FC<ProductPageProps> = async ({ params }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.refresh();
+  });
+
   const product = await getProduct(params.productId);
 
   const suggestedProducts = await getProducts({
