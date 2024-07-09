@@ -91,28 +91,32 @@ const Summary = () => {
 
       // @ts-ignore
       let price = Number(tier[user.tier]);
+      let discountNow = 0;
 
       if (item.product.promo != null) {
         if (item.quantity > item.product.promo.minimumBought) {
-          let discount = price * (item.product.promo.discount * 0.01);
+          discountNow = price * (item.product.promo.discount * 0.01);
 
           price =
             price -
-            (discount > item.product.promo.maximumDiscount
+            (discountNow > item.product.promo.maximumDiscount
               ? item.product.promo.maximumDiscount
-              : discount);
+              : discountNow);
 
           discount +=
-            discount > item.product.promo.maximumDiscount
+            discountNow > item.product.promo.maximumDiscount
               ? item.product.promo.maximumDiscount
-              : discount;
+              : discountNow;
+
+          console.log(discountNow);
         }
       }
 
       console.log(tier);
       console.log(price);
+      console.log(discountNow);
 
-      return total + price * item.quantity;
+      return total + price * item.quantity - discountNow;
     }, 0);
 
     return {
@@ -128,6 +132,13 @@ const Summary = () => {
       toast.error('Cart is Empty');
     } else {
       let { total, discount } = getTotal();
+
+      toast.success(
+        JSON.stringify({
+          total,
+          discount,
+        }),
+      );
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/checkout`,
