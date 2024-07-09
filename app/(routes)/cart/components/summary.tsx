@@ -101,26 +101,31 @@ const Summary = () => {
 
       let data = {
         promo: item.product.promo,
-        // @ts-ignore
-        discountNow: price * (Number(item.product.promo.discount) * 0.01),
+        discountNow:
+          // @ts-ignore
+          price * item.quantity * (Number(item.product.promo.discount) * 0.01),
         // @ts-ignore
         promoMax: Number(item.product.promo.maximumDiscountAmount),
         excedeMaxPromo:
           // @ts-ignore
-          price * (Number(item.product.promo.discount) * 0.01) >
+          price * item.quantity * (Number(item.product.promo.discount) * 0.01) >
           // @ts-ignore
           Number(item.product.promo.maximumDiscountAmount),
         logicIfExcede:
-          // @ts-ignore
-          price * (Number(item.product.promo.discount) * 0.01) <=
+          price *
+            item.quantity *
+            // @ts-ignore
+            (Number(item.product.promo.discount) * 0.01) <=
           // @ts-ignore
           Number(item.product.promo.maximumDiscountAmount)
-            ? // @ts-ignore
-              price * (Number(item.product.promo.discount) * 0.01)
+            ? price *
+              item.quantity *
+              // @ts-ignore
+              (Number(item.product.promo.discount) * 0.01)
             : // @ts-ignore
               Number(item.product.promo.maximumDiscountAmount),
         price:
-          price -
+          price * item.quantity -
           (discountNow >
           // @ts-ignore
           (Number(item.product.promo.maximumDiscountAmount) || 9999999999)
@@ -139,12 +144,17 @@ const Summary = () => {
               Number(item.product.promo.maximumDiscountAmount)
             : discountNow,
         priceAfterDiscount:
-          price - // @ts-ignore
-          (price * (Number(item.product.promo.discount) * 0.01) <=
+          price * item.quantity -
+          (price *
+            item.quantity *
+            // @ts-ignore
+            (Number(item.product.promo.discount) * 0.01) <=
           // @ts-ignore
           Number(item.product.promo.maximumDiscountAmount)
-            ? // @ts-ignore
-              price * (Number(item.product.promo.discount) * 0.01)
+            ? price *
+              item.quantity *
+              // @ts-ignore
+              (Number(item.product.promo.discount) * 0.01)
             : // @ts-ignore
               Number(item.product.promo.maximumDiscountAmount)),
       };
