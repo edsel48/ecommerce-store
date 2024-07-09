@@ -47,6 +47,8 @@ const CartPage = () => {
   };
 
   useEffect(() => {
+    router.refresh();
+
     setIsMounted(true);
 
     const payment = async () => {
