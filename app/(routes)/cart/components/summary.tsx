@@ -95,6 +95,26 @@ const Summary = () => {
       let price = Number(tier[user.tier]);
       let discountNow = 0;
 
+      console.log({
+        promo: item.product.promo,
+        // @ts-ignore
+        discountNow: price * ((item.product.promo.discount || 0) * 0.01),
+        price:
+          price -
+          // @ts-ignore
+          (discountNow > (item.product.promo.maximumDiscount || 0)
+            ? // @ts-ignore
+              item.product.promo.maximumDiscount || 0
+            : discountNow),
+        // @ts-ignore
+        discount:
+          // @ts-ignore
+          discountNow > (item.product.promo.maximumDiscount || 0)
+            ? // @ts-ignore
+              item.product.promo.maximumDiscount || 0
+            : discountNow,
+      });
+
       if (item.product.promo != null) {
         if (item.quantity > item.product.promo.minimumBought) {
           discountNow = price * (item.product.promo.discount * 0.01);
